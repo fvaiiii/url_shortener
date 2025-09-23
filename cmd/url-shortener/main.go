@@ -1,0 +1,55 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"log/slog"
+	"os"
+	"project/internal/config"
+
+	"github.com/joho/godotenv"
+)
+
+const (
+	envLocal = "local"
+	envDev   = "dev"
+	envProd  = "prod"
+)
+
+func main() {
+	// TODO: init config: cleanenv
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system environment")
+	}
+	cfg := config.MustLoad()
+	fmt.Println(cfg)
+
+	// TODO: init logger: slog
+	log := setupLogger(cfg.Env)
+	log.Info("starting url-shortner", slog.String("env", cfg.Env))
+	log.Debug("debug messages are enabled")
+	// TODO: init storage: postgresql
+	// TODO: init router: gin
+	// TODO: run server
+
+}
+
+func setupLogger(env string) *slog.Logger {
+	var log *slog.Logger
+	switch env {
+	case envLocal:
+		log = slog.New(
+			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+		)
+	case envDev:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+		)
+	case envProd:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
+		)
+	}
+
+	return log
+}
