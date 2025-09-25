@@ -2,7 +2,6 @@ package sl
 
 import (
 	"log/slog"
-
 )
 
 // функция врзвращает атрибут пакета slog
