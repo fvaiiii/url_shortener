@@ -10,6 +10,10 @@ import (
 
 	"project/internal/storage/sqlite"
 
+	"project/internal/http-server/middleware"
+	"project/internal/http-server/middleware/mwlogger"
+
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
@@ -29,6 +33,7 @@ func main() {
 
 	// TODO: init logger: slog
 	log := setupLogger(cfg.Env)
+
 	log.Info("starting url-shortner", slog.String("env", cfg.Env))
 	log.Debug("debug messages are enabled")
 
@@ -40,7 +45,17 @@ func main() {
 	}
 
 	_ = storage
+
 	// TODO: init router: gin
+	router := gin.New()
+
+	// middleware
+	router.Use(middleware.RequestID())
+	router.Use(mwlogger.Logger())
+	router.Use(mwlogger.New(log))
+	router.Use(middleware.Recovery())
+	router.Use(middleware.URLFormat())
+
 	// TODO: run server
 
 }
