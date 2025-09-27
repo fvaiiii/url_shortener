@@ -1,0 +1,6 @@
+env: "local" #local, dev, prod
+storage_path: "/mnt/c/rest_api_service/url_shortener/storage/storage.db"
+http_server: 
+  address: "localhost:8082"
+  timeout: 4s # время на чтение запроса и такое же время на отправку ответа 
+  idle_timeout: 60s # время жизни на соединение с клиентом 
