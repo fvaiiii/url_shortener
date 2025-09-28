@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"net/http"
 	"os"
 	"project/internal/config"
 	"project/internal/lib/logger/sl"
 
 	"project/internal/storage/sqlite"
 
+	"project/internal/http-server/handlers/url/save"
 	"project/internal/http-server/middleware"
 	"project/internal/http-server/middleware/mwlogger"
 
@@ -56,6 +58,22 @@ func main() {
 	router.Use(middleware.Recovery())
 	router.Use(middleware.URLFormat())
 
+	router.POST("/url", save.New(log, storage))
+	log.Info("starting server", slog.String("address", cfg.Address))
+
+	srv := &http.Server{
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("failed to start server")
+	}
+
+	log.Error("server stopped")
 	// TODO: run server
 
 }
