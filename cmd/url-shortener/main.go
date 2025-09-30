@@ -11,6 +11,7 @@ import (
 
 	"project/internal/storage/sqlite"
 
+	"project/internal/http-server/handlers/redirect"
 	"project/internal/http-server/handlers/url/save"
 	"project/internal/http-server/middleware"
 	"project/internal/http-server/middleware/mwlogger"
@@ -59,6 +60,7 @@ func main() {
 	router.Use(middleware.URLFormat())
 
 	router.POST("/url", save.New(log, storage))
+	router.GET("/{alias}", redirect.New(log, storage))
 	log.Info("starting server", slog.String("address", cfg.Address))
 
 	srv := &http.Server{
