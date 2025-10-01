@@ -22,15 +22,12 @@ type HTTPServer struct {
 	Password    string        `yaml:"password" env-required:"true" env:"HTTP_SERVER_PASSWORD"`
 }
 
-// приставка must используется обычно в тех случаях, когда функция вместо возврата ошибки будет паниковать
-// инициализация конфига это тот самый случай, когда мы можем паниковать, потому что приложение только запускается, и не страшно его уронить(даже логгер еще не инициализирован)
 func MustLoad() *Config {
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
 		log.Fatal("CONFIG_PATH is not set")
 	}
 
-	// проверка: существует ли такой файл
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Fatalf("config file does not exist: %s", configPath)
 	}
