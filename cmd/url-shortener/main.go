@@ -55,14 +55,17 @@ func main() {
 
 	// middleware
 	router.Use(middleware.RequestID())
-	router.Use(mwlogger.Logger())
 	router.Use(mwlogger.New(log))
-	router.Use(middleware.Recovery())
-	router.Use(middleware.URLFormat())
 
-	router.POST("/url", save.New(log, storage))
-	router.GET("/{alias}", redirect.New(log, storage))
-	router.DELETE("/url/{alias}", delete.New(log, storage))
+	authorized := router.Group("/url", gin.BasicAuth(gin.Accounts{
+		cfg.HTTPServer.User: cfg.HTTPServer.Password,
+	}))
+	{
+		authorized.POST("/", save.New(log, storage))
+		authorized.DELETE("/:alias", delete.New(log, storage))
+	}
+
+	router.GET("/:alias", redirect.New(log, storage))
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 
