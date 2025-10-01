@@ -12,6 +12,7 @@ import (
 	"project/internal/storage"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@latest --name=URLGetter
 type URLGetter interface {
 	GetURL(alias string) (string, error)
 }

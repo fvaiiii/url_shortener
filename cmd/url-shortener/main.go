@@ -11,6 +11,7 @@ import (
 
 	"project/internal/storage/sqlite"
 
+	"project/internal/http-server/handlers/delete"
 	"project/internal/http-server/handlers/redirect"
 	"project/internal/http-server/handlers/url/save"
 	"project/internal/http-server/middleware"
@@ -61,6 +62,7 @@ func main() {
 
 	router.POST("/url", save.New(log, storage))
 	router.GET("/{alias}", redirect.New(log, storage))
+	router.DELETE("/delete", delete.New(log, storage))
 	log.Info("starting server", slog.String("address", cfg.Address))
 
 	srv := &http.Server{
