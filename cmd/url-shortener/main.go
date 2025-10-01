@@ -62,7 +62,8 @@ func main() {
 
 	router.POST("/url", save.New(log, storage))
 	router.GET("/{alias}", redirect.New(log, storage))
-	router.DELETE("/delete", delete.New(log, storage))
+	router.DELETE("/url/{alias}", delete.New(log, storage))
+
 	log.Info("starting server", slog.String("address", cfg.Address))
 
 	srv := &http.Server{
@@ -78,6 +79,7 @@ func main() {
 	}
 
 	log.Error("server stopped")
+
 	// TODO: run server
 
 }
